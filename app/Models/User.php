@@ -30,43 +30,23 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'role', // Enum-based integer role
     ];
 
-
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'two_factor_recovery_codes',
-        'two_factor_secret',
+    protected $casts = [
+        'role' => 'integer', // Casting role to integer
+        'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array<int, string>
-     */
-    protected $appends = [
-        'profile_photo_url',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // Relationships for Artisan and Customer Profiles
+    public function artisanProfile()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'role' => UserRole::class
-        ];
+        return $this->hasOne(ArtisanProfile::class);
     }
+
+    public function customerProfile()
+    {
+        return $this->hasOne(CustomerProfile::class);
+    }
+
 }

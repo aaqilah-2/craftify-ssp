@@ -18,6 +18,10 @@ Route::middleware([
 });
 
 
+require_once __DIR__.'/modules/administration.php';
+
+
+
 
 
 

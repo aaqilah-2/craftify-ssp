@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
 
 class UserController extends Controller
 {
@@ -20,10 +20,10 @@ class UserController extends Controller
     public function authenticate(Request $request)
     {
         return rescue(function () use ($request) {
-            // get only the email and the password
+            // Get only the email and the password
             $credentials = $request->only('email', 'password');
 
-            // using the details to authenticate the user
+            // Authenticate the user
             if (Auth::attempt($credentials)) {
 
                 // User exists and credentials are valid, log them in
@@ -41,15 +41,15 @@ class UserController extends Controller
                     'name' => 'required|string|max:255',
                     'email' => 'required|string|email|max:255|unique:users',
                     'password' => 'required|string|min:8',
-                    'role' => 'required|in:1,2,3', // Adjust role values as per your app
+                    'role' => ['required', 'in:' . implode(',', array_column(UserRole::cases(), 'value'))], // Validate role based on UserRole enum
                 ]);
 
-                // Create the new user with the provided role
+                // Create the new user with the provided role using enum
                 $user = User::create([
                     'name' => $validated['name'],
                     'email' => $validated['email'],
                     'password' => Hash::make($validated['password']),
-                    'role' => $validated['role'],
+                    'role' => UserRole::from($validated['role'])->value, // Store role as integer from enum
                 ]);
 
                 // Token creation
