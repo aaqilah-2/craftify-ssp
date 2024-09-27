@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\CustomerProfile;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Enums\UserRole;
+use Illuminate\Http\Request;
+use App\Models\CustomerProfile;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerProfileController extends Controller
 {
@@ -26,7 +27,7 @@ class CustomerProfileController extends Controller
             'postal_code' => 'required|string',
             'preferences' => 'required|array',
             'phone_number' => 'required|string',
-            'profile_photo' => 'nullable|string',
+            'profile_photo' =>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         // Create the customer profile
@@ -37,7 +38,8 @@ class CustomerProfileController extends Controller
             'postal_code' => $request->postal_code,
             'preferences' => $request->preferences,
             'phone_number' => $request->phone_number,
-            'profile_photo' => $request->profile_photo ?? null,
+            'profile_photo' => $request->file('profile_photo') ? $request->file('profile_photo')->store('public/customer_profiles') : null, 
+            'preferred_payment_methods' => $request->preferred_payment_methods,
         ]);
 
         return response()->json($profile, 201);
@@ -62,8 +64,17 @@ class CustomerProfileController extends Controller
             'postal_code' => 'sometimes|string',
             'preferences' => 'sometimes|array',
             'phone_number' => 'sometimes|string',
-            'profile_photo' => 'sometimes|string',
+            'profile_photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
         ]);
+
+         // Handle profile photo update
+    if ($request->hasFile('profile_photo')) {
+        // Store new uploaded profile photo and remove the old one
+        if ($profile->profile_photo) {
+            Storage::delete($profile->profile_photo); // Delete old photo if it exists
+        }
+        $profile->profile_photo = $request->file('profile_photo')->store('public/customer_profiles'); // Store new photo
+    }
 
         // Update the profile
         $profile->update($request->only([
@@ -72,7 +83,6 @@ class CustomerProfileController extends Controller
             'postal_code',
             'preferences',
             'phone_number',
-            'profile_photo',
         ]));
 
         return response()->json($profile, 200);
