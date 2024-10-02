@@ -49,4 +49,9 @@ class User extends Authenticatable
         return $this->hasOne(CustomerProfile::class);
     }
 
+    // public function getRoleAttribute($value)
+    // {
+    //     return UserRole::from($value); // Use the Enum UserRole for roles
+    // }
+
 }

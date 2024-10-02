@@ -113,12 +113,6 @@ class ProductController extends Controller
 
 
 
-
-
-
-
-
-
     // Fetch a single product (for product details)
     public function show($id)
     {
@@ -142,21 +136,43 @@ class ProductController extends Controller
     }
 
         // Get artisan's products by status
-        public function getProductsByStatus(Request $request)
+                public function getProductsByStatus(Request $request)
         {
-            // Validate that the 'status' query parameter is provided
+            // Validate the 'status' query parameter
             $request->validate([
-                'status' => 'required|in:pending,approved,rejected'
+                'status' => 'required|in:pending,approved,rejected',
             ]);
-        
-            // Fetch products based on the provided status
-            $products = Product::where('artisan_id', Auth::id())
-                                ->where('status', $request->status)
-                                ->get();
-        
-            // Return the products as a collection using ProductResource
+
+            // Fetch products based on the status for admin (no artisan filter)
+            if (Auth::user()->role == 'admin') {
+                $products = Product::where('status', $request->status)->get();
+            } else {
+                // For artisans, only fetch their own products
+                $products = Product::where('artisan_id', Auth::id())
+                                    ->where('status', $request->status)
+                                    ->get();
+            }
+
+            // Return the products as a collection
             return new ProductCollection($products);
         }
+
+
+
+
+            // Method to get approved products for customer view
+            public function getApprovedProducts(Request $request)
+            {
+                $status = $request->query('status', 'approved'); // Defaults to 'approved'
+                
+                // Assuming 'status' field exists on Product model
+                $approvedProducts = Product::where('status', $status)->get();
+        
+                return response()->json([
+                    'data' => $approvedProducts,
+                ], 200);
+            }
+
         
 
 

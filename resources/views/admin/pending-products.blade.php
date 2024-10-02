@@ -1,47 +1,48 @@
-@extends('layouts.app-layout')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+            {{ __('Pending Products') }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Pending Products')
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="p-6 shadow-xl bg-pink-50 sm:rounded-lg">
+                <h3 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">Review Pending Products</h3>
 
-@section('content')
-    <!-- Main Content -->
-    <div class="w-full p-6">
-        <!-- Display Success or Error Messages -->
-        @if (session('success'))
-            <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
-                {{ session('success') }}
-            </div>
-        @endif
+                @if($products->isEmpty())
+                    <p class="text-gray-500">No pending products available for approval.</p>
+                @else
+                    @foreach($products as $product)
+                        <div class="p-6 mb-6 bg-pink-200 border border-pink-300 rounded-lg shadow-lg dark:bg-pink-800">
+                            <h2 class="mb-2 text-lg font-bold text-gray-800 dark:text-white">{{ $product->name }}</h2>
+                            <img src="{{ asset('storage/' . $product->image) }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="object-cover w-full h-48 mb-4 rounded-md shadow-md" 
+                                 style="max-height: 300px; object-fit: contain;">
+                             
+                            <p class="mt-2 font-semibold text-gray-800 dark:text-gray-300">Description: {{ $product->description }}</p>
+                            <p class="mt-2 font-semibold text-gray-800 dark:text-gray-300">Category: {{ $product->category }}</p>
+                            <p class="mt-2 font-bold text-gray-800 dark:text-gray-300">Price: Rs.{{ $product->price }}</p>
+                            <p class="text-gray-600 dark:text-gray-400">Status: {{ $product->status }}</p>
+                            
+                            <!-- Artisan info -->
+                            <p class="mt-2 text-sm font-semibold text-gray-900 dark:text-pink-300">Uploaded by: {{ $product->artisan->name }} ({{ $product->artisan->email }})</p>
 
-        <h1 class="mb-4 text-2xl font-semibold">Pending Products for Approval</h1>
-
-        @if($products->isEmpty())
-            <p class="text-gray-500">No pending products available for approval.</p>
-        @else
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                @foreach($products as $product)
-                    <div class="p-6 bg-white rounded-lg shadow-md">
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="Product Image" class="object-cover w-full h-40 mb-4 rounded-lg">
-                        <h2 class="text-lg font-semibold">{{ $product->name }}</h2>
-                        <p class="text-gray-600">{{ $product->description }}</p>
-                        <p class="mt-2 font-semibold text-gray-700">${{ $product->price }}</p>
-                        <p class="mt-1 text-gray-500">{{ $product->category }}</p>
-                        
-                        <!-- Artisan info -->
-                        <p class="mt-1 text-gray-500">Uploaded by: {{ $product->artisan->name }} ({{ $product->artisan->email }})</p>
-
-                        <div class="flex justify-between mt-4">
-                            <form action="{{ url('/products/' . $product->id . '/approve') }}" method="POST" class="inline-block">
-                                @csrf
-                                <button class="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-700">Approve</button>
-                            </form>
-                            <form action="{{ url('/products/' . $product->id . '/reject') }}" method="POST" class="inline-block">
-                                @csrf
-                                <button class="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-700">Reject</button>
-                            </form>
+                            <div class="flex mt-4 space-x-2">
+                                <form action="/products/{{ $product->id }}/approve" method="POST">
+                                    @csrf
+                                    <button type="submit" class="px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-700">Approve</button>
+                                </form>
+                                <form action="/products/{{ $product->id }}/reject" method="POST">
+                                    @csrf
+                                    <button type="submit" class="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-700">Reject</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                @endif
             </div>
-        @endif
+        </div>
     </div>
-@endsection
+</x-app-layout>

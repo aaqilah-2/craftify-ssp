@@ -29,6 +29,7 @@ class ArtisanProfile extends Model
 
     // Cast fields like JSON to arrays
     protected $casts = [
+        'skills' => 'array',  // Cast as array
         'social_media_links' => 'array',
     ];
 
@@ -39,4 +40,9 @@ class ArtisanProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function products() {
+        return $this->hasMany(Product::class);
+    }
+    
 }

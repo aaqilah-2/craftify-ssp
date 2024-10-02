@@ -1,37 +1,37 @@
-@extends('layouts.app-layout')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+            {{ __('Approved Products') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="w-4/5 p-6">
-    <!-- Success/Error Messages -->
-    @if (session('success'))
-        <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
-            {{ session('success') }}
-        </div>
-    @endif
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="p-6 shadow-xl bg-pink-50 sm:rounded-lg">
+                <h3 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">Approved Products</h3>
 
-    @if (session('error'))
-        <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    <h1 class="mb-4 text-2xl font-semibold">Approved Products</h1>
-
-    @if($products->isEmpty())
-        <p class="text-gray-500">No approved products available.</p>
-    @else
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            @foreach($products as $product)
-            <div class="p-6 bg-white rounded-lg shadow-md">
-                <img src="{{ Storage::url($product->image) }}" alt="Product Image" class="object-cover w-full h-40 mb-4 rounded-lg">
-                <h2 class="text-lg font-semibold">{{ $product->name }}</h2>
-                <p class="text-gray-600">{{ $product->description }}</p>
-                <p class="mt-2 font-semibold text-gray-700">${{ $product->price }}</p>
-                <p class="mt-1 text-gray-500">{{ $product->category }}</p>
-                <p class="mt-1 text-gray-500">Uploaded by: {{ $product->artisan->name }} ({{ $product->artisan->email }})</p>
+                @if($products->isEmpty())
+                    <p class="text-gray-500">No approved products available.</p>
+                @else
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        @foreach($products as $product)
+                            <div class="p-4 bg-pink-200 border border-pink-300 rounded-lg shadow-lg dark:bg-pink-800">
+                                <img src="{{ asset('storage/' . $product->image) }}" 
+                                     alt="{{ $product->name }}" 
+                                     class="object-cover w-full h-48 mb-4 rounded-md shadow-md" 
+                                     style="max-height: 300px; object-fit: cover;">
+                                <h2 class="text-lg font-semibold text-white dark:text-pink-100">{{ $product->name }}</h2>
+                                <p class="mt-2 font-bold text-white dark:text-pink-100">{{ $product->description }}</p>
+                                <p class="mt-2 font-bold text-gray-800 dark:text-gray-300">Price: Rs.{{ $product->price }}</p>
+                                <p class="mt-1 font-semibold text-gray-700 dark:text-pink-200">{{ $product->category }}</p>
+                                
+                                <!-- Artisan info -->
+                                <p class="mt-2 text-sm font-semibold text-gray-900 dark:text-pink-300">Uploaded by: {{ $product->artisan->name }} ({{ $product->artisan->email }})</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
-            @endforeach
         </div>
-    @endif
-</div>
-@endsection
+    </div>
+</x-app-layout>
