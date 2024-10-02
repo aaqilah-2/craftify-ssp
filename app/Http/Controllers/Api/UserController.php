@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+
 class UserController extends Controller
 {
     /**
@@ -70,4 +71,26 @@ class UserController extends Controller
             ], 401);
         });
     }
+
+    public function logout(Request $request)
+{
+    $user = Auth::user();
+
+    // Log to check if the user is retrieved successfully
+    if (!$user) {
+        Log::info('User not authenticated during logout. Token might be invalid or expired.');
+        return response()->json(['message' => 'User not authenticated'], 401);
+    }
+
+
+    // Revoke the user's token
+    
+    $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
+
+    return response()->json(['message' => 'Successfully logged out'], 200);
+}
+
+
+
+    
 }

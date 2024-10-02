@@ -18,6 +18,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // For user authentication (login or register)
 Route::post('/user/auth', [UserController::class, 'authenticate']);
 
+Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+
+
 
 require_once __DIR__.'/modules/artisan.php';
 require_once __DIR__.'/modules/customer.php';
