@@ -17,7 +17,11 @@ Route::middleware(['auth:sanctum', RoleAuthentication::class . ':2'])->group(fun
     //product creation route
     Route::post('/products', [ProductController::class, 'store']); 
     Route::put('/products/{id}', [ProductController::class, 'update']);
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+
 
     Route::get('/artisan/products', [ProductController::class, 'getProductsByStatus']);
+
+    Route::get('/artisan/profile', [ArtisanProfileController::class, 'show']);
 
 });

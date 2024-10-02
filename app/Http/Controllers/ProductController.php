@@ -12,35 +12,6 @@ use App\Http\Resources\ProductCollection;  // Import ProductCollection
 
 class ProductController extends Controller
 {
-    // //Artisan can store (upload) products
-    // public function store(Request $request)
-    // {
-    //     // Validation rules for the product fields
-    //     $request->validate([
-    //         'name' => 'required|string',
-    //         'description' => 'required|string',
-    //         'price' => 'required|numeric',
-    //         'category' => 'required|string',
-    //         'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //     ]);
-
-    //     $imagePath = $request->file('image')->store('products', 'public');
-
-
-    //     // Create a new product in the database
-    //     $product = Product::create([
-    //         'artisan_id' => Auth::id(),  // The ID of the artisan uploading the product
-    //         'name' => $request->name,
-    //         'description' => $request->description,
-    //         'price' => $request->price,
-    //         'category' => $request->category,
-    //         'image' => $imagePath,
-    //         'status' => 'pending',  // Default status is 'pending' until admin approval
-    //     ]);
-
-    //     // Return the newly created product using ProductResource
-    //     return new ProductResource($product);
-    // }
 
     public function store(Request $request)
 {
@@ -79,12 +50,6 @@ class ProductController extends Controller
     // Return the newly created product using ProductResource
     return new ProductResource($product);
 }
-
-
-    
-    
-
-
 
     // Artisan can update their own products
     public function update(Request $request, $id)
@@ -131,6 +96,28 @@ class ProductController extends Controller
         // Return the updated product using ProductResource
         return new ProductResource($product);
     }
+
+
+    // Artisan can delete their own products
+    public function destroy($id)
+    {
+        // Find the product to be deleted
+        $product = Product::where('id', $id)->where('artisan_id', Auth::id())->firstOrFail();
+
+        // Delete the product
+        $product->delete();
+
+        // Return a response indicating successful deletion
+        return response()->json(['message' => 'Product deleted successfully'], 200);
+    }
+
+
+
+
+
+
+
+
 
     // Fetch a single product (for product details)
     public function show($id)

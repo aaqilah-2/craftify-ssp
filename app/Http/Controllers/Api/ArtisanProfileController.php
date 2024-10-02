@@ -6,8 +6,10 @@ use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use App\Models\ArtisanProfile;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\ArtisanProfileResource;
 
 class ArtisanProfileController extends Controller
 {
@@ -42,25 +44,7 @@ class ArtisanProfileController extends Controller
         // Since logo is mandatory, return an error if it's not uploaded
         return response()->json(['message' => 'Logo is required'], 400);
     }
-        // if ($request->has('logo')) {
-        //     $logoData = $request->input('logo');
-
-        //     // Check if the logo is base64-encoded
-        //     if (strpos($logoData, 'data:image/') === 0) {
-        //         // Decode the base64 string and store it as a file
-        //         preg_match('/^data:image\/(\w+);base64,/', $logoData, $type);
-        //         $logoData = substr($logoData, strpos($logoData, ',') + 1);
-        //         $logoData = base64_decode($logoData);
-
-        //         $fileName = 'artisan_logo_' . time() . '.' . $type[1]; // Create a file name with extension
-        //         Storage::put('public/artisan_logos/' . $fileName, $logoData);
-        //         $profile->logo = 'public/artisan_logos/' . $fileName;
-        //     } else {
-        //         // Handle regular file upload case (e.g., non-web environments)
-        //         $logoPath = $request->file('logo')->store('public/artisan_logos');
-        //         $profile->logo = $logoPath;
-        //     }
-        // }
+        
 
         // Create the artisan profile
         $profile = ArtisanProfile::create([
@@ -119,4 +103,38 @@ class ArtisanProfileController extends Controller
 
         return response()->json($profile, 200);
     }
+
+    public function show(Request $request)
+{
+    $user = $request->user(); // Authenticated user
+    $artisanProfile = $user->artisanProfile; // Get the artisan profile
+    
+    if (!$artisanProfile) {
+        return response()->json(['message' => 'Profile not found'], 404);
+    }
+
+    return response()->json([
+        'user' => new UserResource($user),
+        'artisanProfile' => new ArtisanProfileResource($artisanProfile),
+    ]);
+}
+
+// public function getProfile(Request $request)
+// {
+//     $user = Auth::user();
+//     $profile = ArtisanProfile::where('user_id', $user->id)->first();
+
+//     if ($profile) {
+//         return response()->json([
+//             'data' => $profile
+//         ], 200);
+//     } else {
+//         return response()->json([
+//             'error' => 'Profile not found'
+//         ], 404);
+//     }
+// }
+
+
+
 }
