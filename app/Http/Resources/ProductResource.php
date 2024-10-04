@@ -14,7 +14,9 @@ class ProductResource extends JsonResource
         'description' => $this->description,
         'price' => $this->price,
         'category' => $this->category,
-        'image_url' => url('storage/' . $this->image),
+        //'image_url' => url('storage/' . $this->image),
+        'image_url' => asset('storage/' . $this->image),
+
     ];
 
     // Check if the user is an admin or artisan to include additional fields
